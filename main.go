@@ -6,6 +6,7 @@ import (
 	// "github.com/Lemm8/AlumnoInfo-CollegeAPI.git/database"
 
 	"github.com/Lemm8/AlumnoInfo-CollegeAPI.git/api"
+	"github.com/Lemm8/AlumnoInfo-CollegeAPI.git/database"
 	"github.com/Lemm8/AlumnoInfo-CollegeAPI.git/helpers"
 	"github.com/Lemm8/AlumnoInfo-CollegeAPI.git/validators"
 	"github.com/aws/aws-lambda-go/events"
@@ -19,22 +20,38 @@ func handler(ctx context.Context, event events.APIGatewayProxyRequest) (*events.
 	}
 
 	// CONNECT TO DB
-	// dbConnection, err := database.GetConnection()
-	// _, err := database.GetConnection()
-	// if err != nil {
-	// 	return helpers.ServerError(500, string(err.Error()))
-	// }
-	// db = dbConnection
+	dbConnection, err := database.GetConnection()
+	_, err = database.GetConnection()
+	if err != nil {
+		return helpers.ServerError(500, string(err.Error())), nil
+	}
+	db := dbConnection
 
 	switch event.HTTPMethod {
 	case "GET":
-		return api.GetAlumnosInfo(ctx, event), nil
+		apiRespone, err := api.GetAlumnosInfo(ctx, db, event)
+		if err != nil {
+			return helpers.ServerError(500, string(err.Error())), nil
+		}
+		return apiRespone, nil
 	case "POST":
-		return api.PostAlumnoInfo(ctx, event), nil
+		apiRespone, err := api.GetAlumnosInfo(ctx, db, event)
+		if err != nil {
+			return helpers.ServerError(500, string(err.Error())), nil
+		}
+		return apiRespone, nil
 	case "PUT":
-		return api.PutAlumnoInfo(ctx, event), nil
+		apiRespone, err := api.GetAlumnosInfo(ctx, db, event)
+		if err != nil {
+			return helpers.ServerError(500, string(err.Error())), nil
+		}
+		return apiRespone, nil
 	case "DELETE":
-		return api.DeleteAlumnoInfo(ctx, event), nil
+		apiRespone, err := api.GetAlumnosInfo(ctx, db, event)
+		if err != nil {
+			return helpers.ServerError(500, string(err.Error())), nil
+		}
+		return apiRespone, nil
 	default:
 		return helpers.UnhandledMethod(), nil
 	}

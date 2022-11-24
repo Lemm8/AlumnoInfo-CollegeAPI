@@ -46,11 +46,11 @@ func ServerError(statuscode int, errMessage string) *events.APIGatewayProxyRespo
 	}
 }
 
-func GetAlumnosInfoResponse() *events.APIGatewayProxyResponse {
+func GetAlumnosInfoResponse(alumnosInfo []*AlumnoInfo) *events.APIGatewayProxyResponse {
 	// FORMAT RESPONSE
-	body, _ := json.Marshal(&DefaultResponse{
-		Status:  http.StatusOK,
-		Message: "Get Alumnos Info",
+	body, _ := json.Marshal(&AlumnosInfoStruct{
+		Status:      http.StatusOK,
+		AlumnosInfo: alumnosInfo,
 	})
 
 	return &events.APIGatewayProxyResponse{
@@ -59,11 +59,12 @@ func GetAlumnosInfoResponse() *events.APIGatewayProxyResponse {
 	}
 }
 
-func GetAlumnoInfoResponse() *events.APIGatewayProxyResponse {
+func GetAlumnoInfoResponse(alumnoInfo *AlumnoInfo) *events.APIGatewayProxyResponse {
 	// FORMAT RESPONSE
-	body, _ := json.Marshal(&DefaultResponse{
-		Status:  http.StatusOK,
-		Message: "Get Alumno Info",
+	body, _ := json.Marshal(&AlumnoInfoStruct{
+		Status:     http.StatusOK,
+		Message:    "OK",
+		AlumnoInfo: alumnoInfo,
 	})
 
 	return &events.APIGatewayProxyResponse{
@@ -72,11 +73,12 @@ func GetAlumnoInfoResponse() *events.APIGatewayProxyResponse {
 	}
 }
 
-func PostAlumnoInfoResponse() *events.APIGatewayProxyResponse {
+func PostAlumnoInfoResponse(alumnoInfo *AlumnoInfo) *events.APIGatewayProxyResponse {
 	// FORMAT RESPONSE
-	body, _ := json.Marshal(&DefaultResponse{
-		Status:  http.StatusOK,
-		Message: "Post Alumno Info",
+	body, _ := json.Marshal(&AlumnoInfoStruct{
+		Status:     http.StatusOK,
+		Message:    "AlumnoInfo Created",
+		AlumnoInfo: alumnoInfo,
 	})
 
 	return &events.APIGatewayProxyResponse{
@@ -85,11 +87,12 @@ func PostAlumnoInfoResponse() *events.APIGatewayProxyResponse {
 	}
 }
 
-func PutAlumnoInfoResponse() *events.APIGatewayProxyResponse {
+func PutAlumnoInfoResponse(alumnoInfo *AlumnoInfo) *events.APIGatewayProxyResponse {
 	// FORMAT RESPONSE
-	body, _ := json.Marshal(&DefaultResponse{
-		Status:  http.StatusOK,
-		Message: "Put Alumno Info",
+	body, _ := json.Marshal(&AlumnoInfoStruct{
+		Status:     http.StatusOK,
+		Message:    "AlumnoInfo Updated",
+		AlumnoInfo: alumnoInfo,
 	})
 
 	return &events.APIGatewayProxyResponse{
@@ -98,11 +101,12 @@ func PutAlumnoInfoResponse() *events.APIGatewayProxyResponse {
 	}
 }
 
-func DeleteAlumnoInfoResponse() *events.APIGatewayProxyResponse {
+func DeleteAlumnoInfoResponse(alumnoInfo *AlumnoInfo) *events.APIGatewayProxyResponse {
 	// FORMAT RESPONSE
-	body, _ := json.Marshal(&DefaultResponse{
-		Status:  http.StatusOK,
-		Message: "Delete Alumno Info",
+	body, _ := json.Marshal(&AlumnoInfoStruct{
+		Status:     http.StatusOK,
+		Message:    "AlumnoIndo Deleted",
+		AlumnoInfo: alumnoInfo,
 	})
 
 	return &events.APIGatewayProxyResponse{
