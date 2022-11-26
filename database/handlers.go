@@ -11,19 +11,19 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-const getAlumnosInfoQuery = `SELECT * FROM AlumnoInfo;`
+const getAlumnosInfoQuery = `SELECT * FROM Alumno_Info;`
 
-const getAlumnoInfoQuery = `SELECT * FROM AlumnoInfo WHERE ID = ?;`
+const getAlumnoInfoQuery = `SELECT * FROM Alumno_Info WHERE ID = ?;`
 
-const insertAlumnoInfoSQL = `INSERT INTO AlumnoInfo (Estado, Materia_ID, Calificacion_ID, Alumno_ID) 
+const insertAlumnoInfoSQL = `INSERT INTO Alumno_Info (Estado, Materia_ID, Calificacion_ID, Alumno_ID) 
 VALUES (?, ?, ?, ?);`
 
-const updateAlumnoInfoSQL = `UPDATE AlumnoInfo SET Estado = ?, Materia_ID = ?, Calificacion_ID = ?, Alumno_ID = ? WHERE ID = ?;`
+const updateAlumnoInfoSQL = `UPDATE Alumno_Info SET Estado = ?, Materia_ID = ?, Calificacion_ID = ?, Alumno_ID = ? WHERE ID = ?;`
 
-const deleteAlumnoInfoSQL = `DELETE FROM AlumnoInfo WHERE ID = ?;`
+const deleteAlumnoInfoSQL = `DELETE FROM Alumno_Info WHERE ID = ?;`
 
 func FetchAlumnosInfo(ctx context.Context, db *sql.DB, req events.APIGatewayProxyRequest) ([]*helpers.AlumnoInfo, error) {
-	rows, err := db.QueryContext(ctx, getAlumnoInfoQuery)
+	rows, err := db.QueryContext(ctx, getAlumnosInfoQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,8 @@ func FetchAlumnosInfo(ctx context.Context, db *sql.DB, req events.APIGatewayProx
 
 	for rows.Next() {
 		alumnoInfo := &helpers.AlumnoInfo{}
-		if err := rows.Scan(&alumnoInfo.ID, &alumnoInfo.Estado, &alumnoInfo.Calificacion_ID); err != nil {
+		if err := rows.Scan(&alumnoInfo.ID, &alumnoInfo.Estado, &alumnoInfo.Calificacion_ID,
+			&alumnoInfo.Materia_ID, &alumnoInfo.Alumno_ID); err != nil {
 			return nil, err
 		}
 		alumnosInfo = append(alumnosInfo, alumnoInfo)
@@ -54,7 +55,7 @@ func FetchAlumnoInfo(ctx context.Context, db *sql.DB, id int) (*helpers.AlumnoIn
 	if err := row.Scan(&alumnoInfo.ID, &alumnoInfo.Estado, &alumnoInfo.Calificacion_ID,
 		&alumnoInfo.Materia_ID, &alumnoInfo.Alumno_ID); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, errors.New(fmt.Sprintf("No existe un docente con el ID %v", id))
+			return nil, errors.New(fmt.Sprintf("No existe un Alumno Info con el ID %v", id))
 		}
 		return nil, err
 	}
@@ -94,7 +95,7 @@ func CreateAlumnoInfo(ctx context.Context, db *sql.DB, alumnoInfo *helpers.Alumn
 	return alumnoInfo, nil
 }
 
-func UpdateAlumnoInfo(ctx context.Context, db *sql.DB, alumnoInfo *helpers.AlumnoInfo, id int) (*helpers.AlumnoInfo, error) {
+func UpdateAlumnoInfo(ctx context.Context, db *sql.DB, id int, alumnoInfo *helpers.AlumnoInfo) (*helpers.AlumnoInfo, error) {
 
 	_, err := FetchAlumnoInfo(ctx, db, id)
 	if err != nil {
@@ -102,24 +103,24 @@ func UpdateAlumnoInfo(ctx context.Context, db *sql.DB, alumnoInfo *helpers.Alumn
 	}
 
 	if !validators.AlumnoExists(ctx, db, alumnoInfo.Alumno_ID) {
-		return nil, errors.New(fmt.Sprintf("No existe un alumno con el ID: %v", alumnoInfo.Alumno_ID))
-	}
-	if !validators.CalificacionExists(ctx, db, alumnoInfo.Calificacion_ID) {
-		return nil, errors.New(fmt.Sprintf("No existe una calificacion con el ID: %v", alumnoInfo.Alumno_ID))
+		return nil, errors.New(fmt.Sprintf("No existe un alumno con el ID %v", alumnoInfo.Alumno_ID))
 	}
 	if !validators.MateriaExists(ctx, db, alumnoInfo.Materia_ID) {
-		return nil, errors.New(fmt.Sprintf("No existe una materia con el ID: %v", alumnoInfo.Alumno_ID))
+		return nil, errors.New(fmt.Sprintf("No existe una materia con el ID %v", alumnoInfo.Materia_ID))
+	}
+	if !validators.CalificacionExists(ctx, db, alumnoInfo.Calificacion_ID) {
+		return nil, errors.New(fmt.Sprintf("No existe una calificación con el ID %v", alumnoInfo.Calificacion_ID))
 	}
 
 	_, err = db.ExecContext(ctx, updateAlumnoInfoSQL, alumnoInfo.Estado, alumnoInfo.Materia_ID,
-		alumnoInfo.Calificacion_ID, alumnoInfo.Alumno_ID, alumnoInfo.ID)
+		alumnoInfo.Calificacion_ID, alumnoInfo.Alumno_ID, id)
 
 	if err != nil {
 		return nil, err
 	}
 
 	updatedAlumnoInfo := helpers.AlumnoInfo{
-		ID:              alumnoInfo.ID,
+		ID:              int(id),
 		Estado:          alumnoInfo.Estado,
 		Calificacion_ID: alumnoInfo.Calificacion_ID,
 		Materia_ID:      alumnoInfo.Materia_ID,

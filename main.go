@@ -35,19 +35,19 @@ func handler(ctx context.Context, event events.APIGatewayProxyRequest) (*events.
 		}
 		return apiRespone, nil
 	case "POST":
-		apiRespone, err := api.GetAlumnosInfo(ctx, db, event)
+		apiRespone, err := api.PostAlumnoInfo(ctx, db, event)
 		if err != nil {
 			return helpers.ServerError(500, string(err.Error())), nil
 		}
 		return apiRespone, nil
 	case "PUT":
-		apiRespone, err := api.GetAlumnosInfo(ctx, db, event)
+		apiRespone, err := api.PutAlumnoInfo(ctx, db, event)
 		if err != nil {
 			return helpers.ServerError(500, string(err.Error())), nil
 		}
 		return apiRespone, nil
 	case "DELETE":
-		apiRespone, err := api.GetAlumnosInfo(ctx, db, event)
+		apiRespone, err := api.DeleteAlumnoInfo(ctx, db, event)
 		if err != nil {
 			return helpers.ServerError(500, string(err.Error())), nil
 		}

@@ -31,6 +31,7 @@ type Alumno struct {
 	Matricula        string `json:"matricula"`
 	Fecha_Nacimiento string `json:"fecha_nacimiento"`
 	Semestre         string `json:"semestre"`
+	Carreras_ID      int    `json:"carreras_id"`
 }
 
 type Calificacion struct {

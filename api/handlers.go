@@ -50,28 +50,48 @@ func PostAlumnoInfo(ctx context.Context, db *sql.DB, req events.APIGatewayProxyR
 }
 
 func PutAlumnoInfo(ctx context.Context, db *sql.DB, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	// VALIDATE ID EXISTS IN QUERY
-	id := req.QueryStringParameters["id"]
-	if len(id) < 1 {
-		return helpers.ServerError(400, "Se debe incluir el ID"), nil
-	}
-
-	// CONVERT ID TO INT
-	intID, err := strconv.Atoi(id)
-	if err != nil {
-		return nil, errors.New("el id no es válido")
-	}
-
-	// UNMARSHAL BODY TO ALUMNOINFO
 	alumnoInfo := &helpers.AlumnoInfo{}
-	err = json.Unmarshal([]byte(req.Body), alumnoInfo)
+	err := json.Unmarshal([]byte(req.Body), &alumnoInfo)
 	if err != nil {
 		return helpers.ServerError(500, string(err.Error())), nil
 	}
 
-	// UPDATE ALUMNO
-	alumnoInfo, err = database.UpdateAlumnoInfo(ctx, db, alumnoInfo, intID)
-	return helpers.PutAlumnoInfoResponse(alumnoInfo), nil
+	id := req.QueryStringParameters["id"]
+	if len(id) > 0 {
+		intID, err := strconv.Atoi(id)
+		if err != nil {
+			return nil, errors.New("el id no es válido")
+		}
+		UpdateAlumnoInfo, err := database.UpdateAlumnoInfo(ctx, db, intID, alumnoInfo)
+		if err != nil {
+			return nil, err
+		}
+		return helpers.PutAlumnoInfoResponse(UpdateAlumnoInfo), nil
+	}
+
+	return nil, errors.New("se debe incluir el id del alumno_info para actualizarlo")
+	// // VALIDATE ID EXISTS IN QUERY
+	// id := req.QueryStringParameters["id"]
+	// if len(id) < 1 {
+	// 	return helpers.ServerError(400, "Se debe incluir el ID"), nil
+	// }
+
+	// // CONVERT ID TO INT
+	// intID, err := strconv.Atoi(id)
+	// if err != nil {
+	// 	return nil, errors.New("el id no es válido")
+	// }
+
+	// // UNMARSHAL BODY TO ALUMNOINFO
+	// alumnoInfo := &helpers.AlumnoInfo{}
+	// err = json.Unmarshal([]byte(req.Body), alumnoInfo)
+	// if err != nil {
+	// 	return helpers.ServerError(500, string(err.Error())), nil
+	// }
+
+	// // UPDATE ALUMNO
+	// alumnoInfo, err = database.UpdateAlumnoInfo(ctx, db, alumnoInfo, intID)
+	// return helpers.PutAlumnoInfoResponse(alumnoInfo), nil
 }
 
 func DeleteAlumnoInfo(ctx context.Context, db *sql.DB, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
